@@ -1,66 +1,22 @@
 const express = require("express");
-const crypto = require('crypto');
-const session = require('express-session');
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const passport = require("passport");
 require("dotenv").config();
 
+const sessionConfig = require("./config/session");
+const passportConfig = require("./config/passport");
+const authRoutes = require("./routes/auth");
+const weatherRoutes = require("./routes/weather");
+
 const app = express();
+const PORT = 3000;
 
 app.use(express.json());
-
-const PORT = 3000;
-const state = crypto.randomBytes(32).toString('hex');
-
-app.use(
-  session({
-    secret: state,
-    resave: false,
-    saveUninitialized: false,
-  })
-);
+app.use(sessionConfig);
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.use(
-  new GoogleStrategy(
-    {
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: '/auth/google/callback'
-    },
-    (accessToken, refreshToken, profile, done) => {
-      return done(null, profile);
-    }
-  )
-);
-
-passport.serializeUser((user, done) => {
-  done(null, user);
-});
-
-passport.deserializeUser((obj, done) => {
-  done(null, obj);
-});
-
-app.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
-
-app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/" }),
-  (req, res) => {
-    console.log(req.user.id);
-    res.redirect("/");
-  }
-);
-
-app.get("/logout", (req, res) => {
-  req.logout();
-  res.redirect("/");
-});
+app.use("/auth", authRoutes);
+app.use("/weather", weatherRoutes);
 
 app.listen(PORT, () => {
   console.log(`Running on port ${PORT}`);

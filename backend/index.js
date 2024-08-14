@@ -4,14 +4,17 @@ const passport = require("passport");
 require("dotenv").config();
 
 const sessionConfig = require("./config/session");
-const passportConfig = require("./config/passport");
+require("./config/passport");
 const authRoutes = require("./routes/auth");
 const weatherRoutes = require("./routes/weather");
 
 const app = express();
 const PORT = 3092;
 
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3000", 
+  credentials: true
+}));
 app.use(express.json());
 app.use(sessionConfig);
 app.use(passport.initialize());

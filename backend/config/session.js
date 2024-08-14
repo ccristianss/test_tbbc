@@ -7,4 +7,10 @@ module.exports = session({
   secret: state,
   resave: false,
   saveUninitialized: false,
+  cookie: {
+    httpOnly: true, 
+    secure: false,        // Debería ser true en producción con HTTPS
+    maxAge: 1000 * 60 * 60 * 24, 
+    sameSite: 'lax',
+  }
 });

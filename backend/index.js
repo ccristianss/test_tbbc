@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require('cors');
 const passport = require("passport");
 require("dotenv").config();
 
@@ -8,8 +9,9 @@ const authRoutes = require("./routes/auth");
 const weatherRoutes = require("./routes/weather");
 
 const app = express();
-const PORT = 3000;
+const PORT = 3092;
 
+app.use(cors());
 app.use(express.json());
 app.use(sessionConfig);
 app.use(passport.initialize());

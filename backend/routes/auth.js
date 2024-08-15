@@ -14,7 +14,6 @@ router.get(
     failureRedirect: "http://localhost:3000/error",
   }),
   (req, res) => {
-    //console.log(req.user.id);
     res.redirect("http://localhost:3000/");
   }
 );
@@ -26,19 +25,21 @@ router.get("/user", (req, res) => {
       user: req.user,
     });
   } else {
-    res
-      .status(401)
-      .json({
-        message: "Not authenticated",
-        isAuthenticated: false,
-        user: null,
-      });
+    res.status(401).json({
+      message: "Not authenticated",
+      isAuthenticated: false,
+      user: null,
+    });
   }
 });
 
-router.get("/logout", (req, res) => {
-  req.logout();
-  res.redirect("http://localhost:3000/");
+router.get("/logout", (req, res, next) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("http://localhost:3000/");
+  });
 });
 
 module.exports = router;

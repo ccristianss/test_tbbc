@@ -7,6 +7,7 @@ const sessionConfig = require("./config/session");
 require("./config/passport");
 const authRoutes = require("./routes/auth");
 const weatherRoutes = require("./routes/weather");
+const favoritesRoutes = require("./routes/favorites");
 
 const app = express();
 const PORT = 3092;
@@ -22,6 +23,7 @@ app.use(passport.session());
 
 app.use("/auth", authRoutes);
 app.use("/weather", weatherRoutes);
+app.use("/favorite", favoritesRoutes);
 
 app.listen(PORT, () => {
   console.log(`Running on port ${PORT}`);

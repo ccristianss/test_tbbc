@@ -1,16 +1,36 @@
-import React, { useState }  from "react";
+import React, { useState } from "react";
+import {
+  getWeatherDataByCoords,
+  removeFavoriteCity,
+} from "../services/weatherService";
 import WeatherDetailsModal from "./WeatherDetailsModal";
 
-function WeatherList({ cities, removeCity }) {
-
+function WeatherList({ cities }) {
   const [selectedCity, setSelectedCity] = useState(null);
 
-  const handleCityClick = (city) => {
-    setSelectedCity(city);
+  const handleCityClick = async (city) => {
+    const { lat, long } = city;
+
+    try {
+      const response = await getWeatherDataByCoords(lat, long);
+
+      setSelectedCity(response.data);
+    } catch (error) {
+      console.error("Error fetching weather data:", error);
+    }
   };
 
   const closeModal = () => {
     setSelectedCity(null);
+  };
+
+  const handleRemoveCity = async (cityId) => {
+    try {
+      await removeFavoriteCity(cityId);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error removing city from favorites:", error);
+    }
   };
 
   return (
@@ -21,13 +41,13 @@ function WeatherList({ cities, removeCity }) {
           className="city-card"
           onClick={() => handleCityClick(city)}
         >
-          <h3>{city.name}</h3>
-          <p>Temperatura: {city.main.temp}°C</p>
-          <p>Clima: {city.weather[0].description}</p>
+          <h3>
+            {city.name}, {city.country}
+          </h3>
           <button
             onClick={(e) => {
               e.stopPropagation();
-              removeCity(index);
+              handleRemoveCity(city.id);
             }}
           >
             Eliminar
